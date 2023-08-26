@@ -63,4 +63,4 @@ Pull requests welcome. Fork/clone, branch and then PR with ample description and
 
 ## License
 
-This initiative is under the MIT License.
+I don't think this falls under a specific license, but if it does let me know!
