@@ -1,0 +1,8 @@
+# Environment file
+.env
+
+# Node dependencies
+node_modules/
+
+# DS Store, gtfo
+.DS_Store
