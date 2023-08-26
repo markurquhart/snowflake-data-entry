@@ -1,19 +1,21 @@
 require('dotenv').config();
-
 const express = require('express');
 const snowflake = require('snowflake-sdk');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
+
 const app = express();
 const port = 3000;
 
+
+// Express Middleware Configuration
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Snowflake Connection Configuration
-var connection = snowflake.createConnection({
+const connection = snowflake.createConnection({
   account: process.env.SNOWFLAKE_ACCOUNT,
   username: process.env.SNOWFLAKE_USERNAME,
   password: process.env.SNOWFLAKE_PASSWORD,
@@ -23,85 +25,77 @@ var connection = snowflake.createConnection({
   schema: process.env.SNOWFLAKE_SCHEMA
 });
 
-connection.connect((err, conn) => {
+// Snowflake Connection Error Handling
+connection.connect((err) => {
   if (err) {
-    console.error('Unable to connect: ' + err.message);
+    console.error('Unable to connect to Snowflake:', err.message);
   } else {
     console.log('Successfully connected to Snowflake');
   }
 });
 
-// Endpoint to Get Records
+// Setup Endpoints
+
+// Get records from Snowflake
 app.get('/records', (req, res) => {
   connection.execute({
     sqlText: 'SELECT * FROM MY_RECORDS',
     complete: (err, stmt, rows) => {
       if (err) {
-        console.error(`Failed to execute statement: ${err}`);
-        res.status(400).send(err);
-      } else {
-        res.send(rows);
+        return res.status(400).send(err.message);
       }
+      res.send(rows);
     }
   });
 });
 
-// Endpoint to Submit Records
+// Submit records to Snowflake
 app.post('/submit', (req, res) => {
   const currentTime = new Date().toISOString();
-connection.execute({
-    sqlText: `INSERT INTO MY_RECORDS (name, email, LAST_UPDATED) VALUES (?, ?, ?)`,
+  connection.execute({
+    sqlText: 'INSERT INTO MY_RECORDS (name, email, LAST_UPDATED) VALUES (?, ?, ?)',
     binds: [req.body.name, req.body.email, currentTime],
-    complete: (err, stmt, rows) => {
+    complete: (err) => {
       if (err) {
-        console.error(`Failed to execute statement: ${err}`);
-        res.status(400).send(err);
-      } else {
-        res.send('Record inserted!');
+        return res.status(400).send(err.message);
       }
+      res.send('Record inserted!');
     }
   });
 });
 
-
-// Endpoint to Update Records
+// Update records in Snowflake
 app.post('/update', (req, res) => {
   const { originalName, newName, newEmail } = req.body;
   const currentTime = new Date().toISOString();
-connection.execute({
-    sqlText: `UPDATE MY_RECORDS SET name = ?, email = ?, LAST_UPDATED = ? WHERE name = ?`,
+  connection.execute({
+    sqlText: 'UPDATE MY_RECORDS SET name = ?, email = ?, LAST_UPDATED = ? WHERE name = ?',
     binds: [newName, newEmail, currentTime, originalName],
-      complete: (err, stmt, rows) => {
-          if (err) {
-              console.error(`Failed to execute statement: ${err}`);
-              res.status(400).send(err);
-          } else {
-              res.send('Record updated!');
-          }
+    complete: (err) => {
+      if (err) {
+        return res.status(400).send(err.message);
       }
+      res.send('Record updated!');
+    }
   });
 });
 
-
-// Endpoint to Delete Records
+// Delete records in Snowflake
 app.post('/delete', (req, res) => {
   const { name } = req.body;
-
   connection.execute({
-      sqlText: `DELETE FROM MY_RECORDS WHERE name = ?`,
-      binds: [name],
-      complete: (err, stmt, rows) => {
-          if (err) {
-              console.error(`Failed to execute statement: ${err}`);
-              res.status(400).send(err);
-          } else {
-              res.send('Record deleted!');
-          }
+    sqlText: 'DELETE FROM MY_RECORDS WHERE name = ?',
+    binds: [name],
+    complete: (err) => {
+      if (err) {
+        return res.status(400).send(err.message);
       }
+      res.send('Record deleted!');
+    }
   });
 });
 
-
+// Server Start
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
