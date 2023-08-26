@@ -17,7 +17,7 @@ A Node.js-app and simple front-end, designed to enter, edit, and delete data tha
 ### Prep Snowflake
 
 1. **Create your Database**: (naming convention does not matter)
-2. **Create your Schema** (namving convention does not matter)
+2. **Create your Schema** (naming convention does not matter)
 3. **Create your table**:  Naming does matter, the code in this repo references a table named 'MY_RECORDS'
 4. **Here is the table DDL**
 ```
