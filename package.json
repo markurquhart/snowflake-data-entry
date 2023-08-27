@@ -1,10 +1,11 @@
 {
   "name": "data-entry-snowflake",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Node.js-app and simple front-end, designed to enter, edit, and delete data that lives in a Snowflake database.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -15,5 +16,6 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "snowflake-sdk": "^1.7.0"
-  }
+  },
+  "devDependencies": {}
 }
